@@ -20,7 +20,9 @@
                     <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="50" />
@@ -44,11 +46,12 @@
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
                 </Grid.RowDefinitions>
-                <Button Grid.Row="5" Grid.Column="10" Name="TurnButton" Click="TurnClick">
+                <Button Grid.Row="6" Grid.Column="11" Name="TurnButton" Click="TurnClick">
                     <TextBlock>NEXT</TextBlock>
                 </Button>
-                <TextBlock Grid.Row="4" Grid.Column="10" Text="" TextAlignment="Center" Name="MessageBox"></TextBlock>
+                <TextBlock Grid.Row="5" Grid.Column="11" Text="" TextAlignment="Center" Name="MessageBox"></TextBlock>
             </Grid>
         </Border>
     </Grid>

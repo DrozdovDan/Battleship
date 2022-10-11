@@ -23,12 +23,12 @@ public static class SecondTurnClass
         if (thatButton.Background == Brushes.Aqua)
         {
             thatButton.Background = Brushes.Red;
-            fleet[Grid.GetRow(thatButton), Grid.GetColumn(thatButton) - 1 - maxSizeOfField] = 1;
+            fleet[Grid.GetRow(thatButton) - 1, Grid.GetColumn(thatButton) - 3 - maxSizeOfField] = 1;
         }
         else
         {
             thatButton.Background = Brushes.Aqua;
-            fleet[Grid.GetRow(thatButton), Grid.GetColumn(thatButton) - 1 - maxSizeOfField] = 0;
+            fleet[Grid.GetRow(thatButton) - 1, Grid.GetColumn(thatButton) - 3 - maxSizeOfField] = 0;
         }
     }
 
@@ -94,5 +94,11 @@ public static class SecondTurnClass
             if (secondFleet[i, x] == 0) break;
             secondFleet[i, x] = secondBattleships[^1];
         }
+        secondFleet[i, j] = secondBattleships[^1];
+    }
+
+    public static void BeatSecond(Button thatButton)
+    {
+        firstTurn = true;
     }
 }
