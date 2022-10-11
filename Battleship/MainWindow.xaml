@@ -51,6 +51,9 @@
                 <Button Grid.Row="6" Grid.Column="11" Name="TurnButton" Click="TurnClick">
                     <TextBlock>NEXT</TextBlock>
                 </Button>
+                <Button Grid.Row="4" Grid.Column="11" Name="ResetButton" Click="ResetClick">
+                    <TextBlock>RESET</TextBlock>
+                </Button>
                 <TextBlock Grid.Row="5" Grid.Column="11" Text="" TextAlignment="Center" Name="MessageBox"></TextBlock>
             </Grid>
         </Border>
