@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static Battleship.FirstTurnClass;
 using static Battleship.SecondTurnClass;
+using static Battleship.Bot;
 
 namespace Battleship
 {
@@ -24,7 +25,7 @@ namespace Battleship
     {
         public const int maxSizeOfField = 10;
         private bool startOfGame = true;
-        private bool IsSomeoneWon = false;
+        private bool isSomeoneWon = false;
         public static int[,] firstFleet = new int[maxSizeOfField, maxSizeOfField];
         public static int[,] secondFleet = new int[maxSizeOfField, maxSizeOfField];
         public static int[,] firstFleetAtStart = new int[maxSizeOfField, maxSizeOfField];
@@ -35,90 +36,22 @@ namespace Battleship
         public static List<int> firstBattleships = new List<int>();
         public static List<int> secondBattleships = new List<int>();
         public static string str = "";
+        private static bool bot = false;
 
         public MainWindow()
         {
             InitializeComponent();
+            
+            SetField();
 
-            //Create a field for first player
-            for (int i = 1; i < maxSizeOfField + 1; i++)
-            {
-                for (int j = 1; j < maxSizeOfField + 1; j++)
-                {
-                    Button button = new Button();
-                    button.Click += FirstClick;
-                    Grid.SetColumn(button, j);
-                    Grid.SetRow(button, i);
-                    button.Width = 50;
-                    button.Height = 50;
-                    button.Background = Brushes.Aqua;
-                    firstField[i - 1, j - 1] = button;
-                    MyGrid.Children.Add(button);
-                }
-            }
-
-            //Create a field for second player
-            for (int i = 1; i < maxSizeOfField + 1; i++)
-            {
-                for (int j = maxSizeOfField + 3; j < maxSizeOfField * 2 + 3; j++)
-                {
-                    Button button = new Button();
-                    button.Click += SecondClick;
-                    Grid.SetColumn(button, j);
-                    Grid.SetRow(button, i);
-                    button.Width = 50;
-                    button.Height = 50;
-                    button.Background = Brushes.Aqua;
-                    secondField[i - 1, j - 3 - maxSizeOfField] = button;
-                    MyGrid.Children.Add(button);
-                }
-            }
-
-            //Create empty fleets
-            for (int i = 0; i < maxSizeOfField; i++)
-            {
-                for (int j = 0; j < maxSizeOfField; j++)
-                {
-                    firstFleetAtStart[i, j] = 0;
-                    secondFleetAtStart[i, j] = 0;
-                }
-            }
-
-            int sign = 1;
-            //Create signs
-            for (int i = 1; i < maxSizeOfField + 1; i++)
-            {
-                TextBlock textBlock1 = new TextBlock();
-                textBlock1.Text = ((char)(sign + 96)).ToString();
-                textBlock1.TextAlignment = TextAlignment.Center;
-                Grid.SetColumn(textBlock1, i);
-                Grid.SetRow(textBlock1, 0);
-                MyGrid.Children.Add(textBlock1);
-                TextBlock textBlock2 = new TextBlock();
-                textBlock2.Text = ((char)(sign + 96)).ToString();
-                textBlock2.TextAlignment = TextAlignment.Center;
-                Grid.SetColumn(textBlock2, i + maxSizeOfField + 2);
-                Grid.SetRow(textBlock2, 0);
-                MyGrid.Children.Add(textBlock2);
-                TextBlock textBlock3 = new TextBlock();
-                textBlock3.Text = sign.ToString();
-                textBlock3.TextAlignment = TextAlignment.Center;
-                Grid.SetColumn(textBlock3, 0);
-                Grid.SetRow(textBlock3, i);
-                MyGrid.Children.Add(textBlock3);
-                TextBlock textBlock4 = new TextBlock();
-                textBlock4.Text = sign.ToString();
-                textBlock4.TextAlignment = TextAlignment.Center;
-                Grid.SetColumn(textBlock4, maxSizeOfField + 2);
-                Grid.SetRow(textBlock4, i);
-                MyGrid.Children.Add(textBlock4);
-                sign += 1;
-            }
+            CreateFleets();
+            
+            CreateSigns();
         }
 
         private void FirstClick(object? sender, RoutedEventArgs e)
         {
-            if (firstTurn && !IsSomeoneWon)
+            if (firstTurn && !isSomeoneWon)
             {
                 var thatButton = (Button)sender!;
 
@@ -133,9 +66,19 @@ namespace Battleship
                     MessageBox.Text = str;
                     if (secondBattleships.Count == 0)
                     {
-                        IsSomeoneWon = true;
-                        MessageBox.Text = "FIRST PLAYER\nWON!";
+                        isSomeoneWon = true;
+                        MessageBox.Text = "FIRST PLAYER WON!";
                         ColorForLooser(firstFleet, secondField);
+                        TurnBox.Text = "";
+                    }
+                    else if (!firstTurn)
+                    {
+                        TurnBox.Text = "Second turn";
+                    }
+
+                    if (bot)
+                    {
+                        BotClick(sender, e);
                     }
                 }
             }
@@ -143,7 +86,7 @@ namespace Battleship
 
         private void SecondClick(object? sender, RoutedEventArgs e)
         {
-            if (!firstTurn && !IsSomeoneWon)
+            if (!firstTurn && !isSomeoneWon)
             {
                 var thatButton = (Button)sender!;
 
@@ -158,9 +101,14 @@ namespace Battleship
                     MessageBox.Text = str;
                     if (firstBattleships.Count == 0)
                     {
-                        IsSomeoneWon = true;
-                        MessageBox.Text = "SECOND PLAYER\nWON!";
+                        isSomeoneWon = true;
+                        MessageBox.Text = "SECOND PLAYER WON!";
                         ColorForLooser(secondFleet, firstField);
+                        TurnBox.Text = "";
+                    }
+                    else if (firstTurn)
+                    {
+                        TurnBox.Text = "First turn";
                     }
                 }
             }
@@ -177,7 +125,7 @@ namespace Battleship
         private void ResetClick(object? sender, RoutedEventArgs e)
         {
             startOfGame = true;
-            IsSomeoneWon = false;
+            isSomeoneWon = false;
             firstFleet = new int[maxSizeOfField, maxSizeOfField];
             secondFleet = new int[maxSizeOfField, maxSizeOfField];
             firstFleetAtStart = new int[maxSizeOfField, maxSizeOfField];
@@ -188,133 +136,34 @@ namespace Battleship
             firstBattleships = new List<int>();
             secondBattleships = new List<int>();
             str = "";
+            MessageBox.Text = "";
+            TurnBox.Text = "First turn";
+            bot = false;
+            BotButton.Visibility = Visibility.Visible;
             
             InitializeComponent();
 
-            //Create a field for first player
-            for (int i = 1; i < maxSizeOfField + 1; i++)
-            {
-                for (int j = 1; j < maxSizeOfField + 1; j++)
-                {
-                    Button button = new Button();
-                    button.Click += FirstClick;
-                    Grid.SetColumn(button, j);
-                    Grid.SetRow(button, i);
-                    button.Width = 50;
-                    button.Height = 50;
-                    button.Background = Brushes.Aqua;
-                    firstField[i - 1, j - 1] = button;
-                    MyGrid.Children.Add(button);
-                }
-            }
+            SetField();
 
-            //Create a field for second player
-            for (int i = 1; i < maxSizeOfField + 1; i++)
-            {
-                for (int j = maxSizeOfField + 3; j < maxSizeOfField * 2 + 3; j++)
-                {
-                    Button button = new Button();
-                    button.Click += SecondClick;
-                    Grid.SetColumn(button, j);
-                    Grid.SetRow(button, i);
-                    button.Width = 50;
-                    button.Height = 50;
-                    button.Background = Brushes.Aqua;
-                    secondField[i - 1, j - 3 - maxSizeOfField] = button;
-                    MyGrid.Children.Add(button);
-                }
-            }
-
-            //Create empty fleets
-            for (int i = 0; i < maxSizeOfField; i++)
-            {
-                for (int j = 0; j < maxSizeOfField; j++)
-                {
-                    firstFleetAtStart[i, j] = 0;
-                    secondFleetAtStart[i, j] = 0;
-                }
-            }
-
-            int sign = 1;
-            //Create signs
-            for (int i = 1; i < maxSizeOfField + 1; i++)
-            {
-                TextBlock textBlock1 = new TextBlock();
-                textBlock1.Text = ((char)(sign + 96)).ToString();
-                textBlock1.TextAlignment = TextAlignment.Center;
-                Grid.SetColumn(textBlock1, i);
-                Grid.SetRow(textBlock1, 0);
-                MyGrid.Children.Add(textBlock1);
-                TextBlock textBlock2 = new TextBlock();
-                textBlock2.Text = ((char)(sign + 96)).ToString();
-                textBlock2.TextAlignment = TextAlignment.Center;
-                Grid.SetColumn(textBlock2, i + maxSizeOfField + 2);
-                Grid.SetRow(textBlock2, 0);
-                MyGrid.Children.Add(textBlock2);
-                TextBlock textBlock3 = new TextBlock();
-                textBlock3.Text = sign.ToString();
-                textBlock3.TextAlignment = TextAlignment.Center;
-                Grid.SetColumn(textBlock3, 0);
-                Grid.SetRow(textBlock3, i);
-                MyGrid.Children.Add(textBlock3);
-                TextBlock textBlock4 = new TextBlock();
-                textBlock4.Text = sign.ToString();
-                textBlock4.TextAlignment = TextAlignment.Center;
-                Grid.SetColumn(textBlock4, maxSizeOfField + 2);
-                Grid.SetRow(textBlock4, i);
-                MyGrid.Children.Add(textBlock4);
-                sign += 1;
-            }
+            CreateFleets();
+            
+            CreateSigns();
         }
 
         private void StartCheck()
         {
             if (firstTurn)
             {
-                firstBattleships = new List<int>();
-                Array.Copy(firstFleetAtStart, firstFleet, maxSizeOfField * maxSizeOfField);
-                if (CheckFirstFleet())
+                FirstTurn();
+                
+                if (bot)
                 {
-                    for (int i = 0; i < maxSizeOfField; i++)
-                    {
-                        for (int j = 0; j < maxSizeOfField; j++)
-                        {
-                            firstField[i, j].Background = Brushes.Aqua;
-                        }
-                    }
-
-                    MessageBox.Text = "";
-                    firstTurn = false;
-                }
-
-                else
-                {
-                    MessageBox.Text = "WRONG\nPLACEMENT,\nTRY AGAIN";
+                    SecondTurn();
                 }
             }
             else
             {
-                secondBattleships = new List<int>();
-                Array.Copy(secondFleetAtStart, secondFleet, maxSizeOfField * maxSizeOfField);
-                if (CheckSecondFleet())
-                {
-                    for (int i = 0; i < maxSizeOfField; i++)
-                    {
-                        for (int j = 0; j < maxSizeOfField; j++)
-                        {
-                            secondField[i, j].Background = Brushes.Aqua;
-                        }
-                    }
-
-                    MessageBox.Text = "";
-                    firstTurn = true;
-                    startOfGame = false;
-                }
-
-                else
-                {
-                    MessageBox.Text = "WRONG\nPLACEMENT,\nTRY AGAIN";
-                }
+                SecondTurn();
             }
         }
 
@@ -328,6 +177,156 @@ namespace Battleship
                     {
                         field[i, j].Background = Brushes.Green;
                     }
+                }
+            }
+        }
+
+        private void SetField()
+        {
+            for (int i = 0; i < maxSizeOfField; i++)
+            {
+                for (int j = 0; j < maxSizeOfField; j++)
+                {
+                    //Create a field for first player
+                    Button button1 = new Button();
+                    button1.Click += FirstClick;
+                    Grid.SetColumn(button1, j);
+                    Grid.SetRow(button1, i);
+                    button1.Width = 50;
+                    button1.Height = 50;
+                    button1.Background = Brushes.Aqua;
+                    firstField[i, j] = button1;
+                    MyGrid1.Children.Add(button1);
+                    
+                    //Create a field for second player
+                    Button button2 = new Button();
+                    button2.Click += SecondClick;
+                    Grid.SetColumn(button2, j);
+                    Grid.SetRow(button2, i);
+                    button2.Width = 50;
+                    button2.Height = 50;
+                    button2.Background = Brushes.Aqua;
+                    secondField[i, j] = button2;
+                    MyGrid2.Children.Add(button2);
+                }
+            }
+        }
+
+        private void CreateFleets()
+        {
+            for (int i = 0; i < maxSizeOfField; i++)
+            {
+                for (int j = 0; j < maxSizeOfField; j++)
+                {
+                    firstFleetAtStart[i, j] = 0;
+                    secondFleetAtStart[i, j] = 0;
+                }
+            }
+        }
+
+        private void CreateSigns()
+        {
+            //Create horizontal signs
+            for (int i = 0; i < maxSizeOfField; i++)
+            {
+                TextBlock textBlock1 = new TextBlock();
+                textBlock1.Text = ((char)(i + 65)).ToString();
+                textBlock1.HorizontalAlignment = HorizontalAlignment.Center;
+                textBlock1.VerticalAlignment = VerticalAlignment.Center;
+                Grid.SetRow(textBlock1, 0);
+                Grid.SetColumn(textBlock1, i);
+                TextBlock textBlock2 = new TextBlock();
+                textBlock2.Text = ((char)(i + 65)).ToString();
+                textBlock2.HorizontalAlignment = HorizontalAlignment.Center;
+                textBlock2.VerticalAlignment = VerticalAlignment.Center;
+                Grid.SetRow(textBlock2, 0);
+                Grid.SetColumn(textBlock2, i + maxSizeOfField + 1);
+                MyGrid3.Children.Add(textBlock1);
+                MyGrid3.Children.Add(textBlock2);
+            }
+            
+            //Create vertical signs
+            for (int i = 0; i < maxSizeOfField; i++)
+            {
+                TextBlock textBlock1 = new TextBlock();
+                textBlock1.Text = (maxSizeOfField - i).ToString();
+                textBlock1.HorizontalAlignment = HorizontalAlignment.Center;
+                textBlock1.VerticalAlignment = VerticalAlignment.Center;
+                Grid.SetRow(textBlock1, i);
+                Grid.SetColumn(textBlock1, 0);
+                MyGrid4.Children.Add(textBlock1);
+            }
+        }
+
+        private void FirstTurn()
+        {
+            firstBattleships = new List<int>();
+            Array.Copy(firstFleetAtStart, firstFleet, maxSizeOfField * maxSizeOfField);
+            if (CheckFirstFleet())
+            {
+                for (int i = 0; i < maxSizeOfField; i++)
+                {
+                    for (int j = 0; j < maxSizeOfField; j++)
+                    {
+                        firstField[i, j].Background = Brushes.Aqua;
+                    }
+                }
+
+                BotButton.Visibility = Visibility.Collapsed;
+                MessageBox.Text = "";
+                firstTurn = false;
+                TurnBox.Text = "Second turn";
+            }
+
+            else
+            {
+                MessageBox.Text = "WRONG PLACEMENT, TRY AGAIN";
+            }
+        }
+
+        private void SecondTurn()
+        {
+            secondBattleships = new List<int>();
+            Array.Copy(secondFleetAtStart, secondFleet, maxSizeOfField * maxSizeOfField);
+            if (CheckSecondFleet())
+            {
+                for (int i = 0; i < maxSizeOfField; i++)
+                {
+                    for (int j = 0; j < maxSizeOfField; j++)
+                    {
+                        secondField[i, j].Background = Brushes.Aqua;
+                    }
+                }
+
+                MessageBox.Text = "";
+                firstTurn = true;
+                TurnBox.Text = "First turn";
+                startOfGame = false;
+            }
+
+            else
+            {
+                MessageBox.Text = "WRONG PLACEMENT, TRY AGAIN";
+            }
+        }
+
+        public void BotClick(object? sender, RoutedEventArgs e)
+        {
+            bot = true;
+            BotButton.Visibility = Visibility.Collapsed;
+            
+            if (startOfGame)
+            {
+                CreateBotFleet();
+            }
+            else
+            {
+                while (!firstTurn)
+                {
+                    var randomRow = new Random().Next(maxSizeOfField);
+                    var randomColumn = new Random().Next(maxSizeOfField);
+                    
+                    SecondClick(secondField[randomRow, randomColumn], e);
                 }
             }
         }

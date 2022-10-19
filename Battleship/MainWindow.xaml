@@ -5,24 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Battleship"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" MinHeight="550" MinWidth="1150">
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        Title="MainWindow" Height="750" Width="1050" MinHeight="800" MinWidth="1065">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="750" Width="1050" MinHeight="750"
+          MinWidth="1050" Background="Pink">
         <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Black" BorderThickness="2">
-            <Grid Name="MyGrid">
+            <Grid Name="MyGrid1" HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="50" />
@@ -46,16 +34,117 @@
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
-                    <RowDefinition Height="50" />
                 </Grid.RowDefinitions>
-                <Button Grid.Row="6" Grid.Column="11" Name="TurnButton" Click="TurnClick">
-                    <TextBlock>NEXT</TextBlock>
-                </Button>
-                <Button Grid.Row="4" Grid.Column="11" Name="ResetButton" Click="ResetClick">
-                    <TextBlock>RESET</TextBlock>
-                </Button>
-                <TextBlock Grid.Row="5" Grid.Column="11" Text="" TextAlignment="Center" Name="MessageBox"></TextBlock>
             </Grid>
         </Border>
+        <Border HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Black" BorderThickness="2">
+            <Grid Name="MyGrid2" HorizontalAlignment="Right">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                </Grid.RowDefinitions>
+            </Grid>
+        </Border>
+        <Grid Name="MyGrid3" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            
+            <Button Grid.Row="0" Grid.Column="10" Background="Pink" Click="BotClick" Name="BotButton"> <TextBlock Text="BOT"> </TextBlock> </Button>
+        </Grid>
+
+        <Grid Name="MyGrid4" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+        </Grid>
+
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1050" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" Name="TurnButton" Click="TurnClick" Background="Pink">
+                <TextBlock>NEXT</TextBlock>
+            </Button>
+            <Button Grid.Row="1" Grid.Column="0" Name="ResetButton" Click="ResetClick" Background="Pink">
+                <TextBlock>RESET</TextBlock>
+            </Button>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="" HorizontalAlignment="Center" Name="MessageBox"
+                       FontSize="16" VerticalAlignment="Center">
+            </TextBlock>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="First turn" HorizontalAlignment="Center" Name="TurnBox"
+                       FontSize="16" VerticalAlignment="Center">
+            </TextBlock>
+        </Grid>
     </Grid>
 </Window>

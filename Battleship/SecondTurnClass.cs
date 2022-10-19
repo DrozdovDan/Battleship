@@ -23,12 +23,12 @@ public static class SecondTurnClass
         if (thatButton.Background == Brushes.Aqua)
         {
             thatButton.Background = Brushes.Red;
-            secondFleetAtStart[Grid.GetRow(thatButton) - 1, Grid.GetColumn(thatButton) - 3 - maxSizeOfField] = 1;
+            secondFleetAtStart[Grid.GetRow(thatButton), Grid.GetColumn(thatButton)] = 1;
         }
         else
         {
             thatButton.Background = Brushes.Aqua;
-            secondFleetAtStart[Grid.GetRow(thatButton) - 1, Grid.GetColumn(thatButton) - 3 - maxSizeOfField] = 0;
+            secondFleetAtStart[Grid.GetRow(thatButton), Grid.GetColumn(thatButton)] = 0;
         }
     }
 
@@ -100,11 +100,12 @@ public static class SecondTurnClass
     {
         if (thatButton.Background == Brushes.Aqua)
         {
-            if (firstFleet[Grid.GetRow(thatButton) - 1, Grid.GetColumn(thatButton) - 3 - maxSizeOfField] > 0)
+            if (firstFleet[Grid.GetRow(thatButton), Grid.GetColumn(thatButton)] > 0)
             {
                 thatButton.Background = Brushes.Red;
+                thatButton.IsHitTestVisible = false;
 
-                str = "You\nbeat\na ship";
+                str = "You beat a ship";
 
                 if (CheckKilledShip(thatButton))
                 {
@@ -114,7 +115,10 @@ public static class SecondTurnClass
             else
             {
                 firstTurn = true;
+
                 thatButton.Background = Brushes.Blue;
+                thatButton.IsHitTestVisible = false;
+
                 str = "You missed";
             }
         }
@@ -124,11 +128,27 @@ public static class SecondTurnClass
     {
         var countOfBlocks = 1;
 
-        //Check for down
-        for (int i = Grid.GetRow(thatButton); i < maxSizeOfField; i++)
+        countOfBlocks += CheckForDown(thatButton);
+
+        countOfBlocks += CheckForUp(thatButton);
+
+        countOfBlocks += CheckForRight(thatButton);
+
+        countOfBlocks += CheckForLeft(thatButton);
+
+        var returnValue = CheckIfShipFullDamaged(thatButton, countOfBlocks);
+
+        return returnValue;
+    }
+
+    private static int CheckForDown(Button thatButton)
+    {
+        var countOfBlocks = 0;
+
+        for (int i = Grid.GetRow(thatButton) + 1; i < maxSizeOfField; i++)
         {
-            if (firstFleet[i, Grid.GetColumn(thatButton) - 3 - maxSizeOfField] > 0 &&
-                secondField[i, Grid.GetColumn(thatButton) - 3 - maxSizeOfField].Background == Brushes.Red)
+            if (firstFleet[i, Grid.GetColumn(thatButton)] > 0 &&
+                secondField[i, Grid.GetColumn(thatButton)].Background == Brushes.Red)
             {
                 countOfBlocks += 1;
             }
@@ -138,11 +158,17 @@ public static class SecondTurnClass
             }
         }
 
-        //Check for up
-        for (int i = Grid.GetRow(thatButton) - 2; i >= 0; i--)
+        return countOfBlocks;
+    }
+
+    private static int CheckForUp(Button thatButton)
+    {
+        var countOfBlocks = 0;
+
+        for (int i = Grid.GetRow(thatButton) - 1; i >= 0; i--)
         {
-            if (firstFleet[i, Grid.GetColumn(thatButton) - 3 - maxSizeOfField] > 0 &&
-                secondField[i, Grid.GetColumn(thatButton) - 3 - maxSizeOfField].Background == Brushes.Red)
+            if (firstFleet[i, Grid.GetColumn(thatButton)] > 0 &&
+                secondField[i, Grid.GetColumn(thatButton)].Background == Brushes.Red)
             {
                 countOfBlocks += 1;
             }
@@ -152,11 +178,17 @@ public static class SecondTurnClass
             }
         }
 
-        //Check for right
-        for (int i = Grid.GetColumn(thatButton) - 2 - maxSizeOfField; i < maxSizeOfField; i++)
+        return countOfBlocks;
+    }
+
+    private static int CheckForRight(Button thatButton)
+    {
+        var countOfBlocks = 0;
+
+        for (int i = Grid.GetColumn(thatButton) + 1; i < maxSizeOfField; i++)
         {
-            if (firstFleet[Grid.GetRow(thatButton) - 1, i] > 0 &&
-                secondField[Grid.GetRow(thatButton) - 1, i].Background == Brushes.Red)
+            if (firstFleet[Grid.GetRow(thatButton), i] > 0 &&
+                secondField[Grid.GetRow(thatButton), i].Background == Brushes.Red)
             {
                 countOfBlocks += 1;
             }
@@ -166,11 +198,17 @@ public static class SecondTurnClass
             }
         }
 
-        //Check for left
-        for (int i = Grid.GetColumn(thatButton) - 4 - maxSizeOfField; i >= 0; i--)
+        return countOfBlocks;
+    }
+
+    private static int CheckForLeft(Button thatButton)
+    {
+        var countOfBlocks = 0;
+
+        for (int i = Grid.GetColumn(thatButton) - 1; i >= 0; i--)
         {
-            if (firstFleet[Grid.GetRow(thatButton) - 1, i] > 0 &&
-                secondField[Grid.GetRow(thatButton) - 1, i].Background == Brushes.Red)
+            if (firstFleet[Grid.GetRow(thatButton), i] > 0 &&
+                secondField[Grid.GetRow(thatButton), i].Background == Brushes.Red)
             {
                 countOfBlocks += 1;
             }
@@ -180,22 +218,27 @@ public static class SecondTurnClass
             }
         }
 
-        if (countOfBlocks == firstFleet[Grid.GetRow(thatButton) - 1, Grid.GetColumn(thatButton) - 3 - maxSizeOfField])
+        return countOfBlocks;
+    }
+
+    private static bool CheckIfShipFullDamaged(Button thatButton, int countOfBlocks)
+    {
+        if (countOfBlocks == firstFleet[Grid.GetRow(thatButton), Grid.GetColumn(thatButton)])
         {
             firstBattleships.Remove(countOfBlocks);
             switch (countOfBlocks)
             {
                 case 4:
-                    str = "You\nkilled\na battleship";
+                    str = "You killed a battleship";
                     break;
                 case 3:
-                    str = "You\nkilled\na cruiser";
+                    str = "You killed a cruiser";
                     break;
                 case 2:
-                    str = "You\nkilled\na destroyer";
+                    str = "You killed a destroyer";
                     break;
                 case 1:
-                    str = "You\nkilled\na torpedo boat";
+                    str = "You killed a torpedo boat";
                     break;
             }
 
@@ -209,51 +252,67 @@ public static class SecondTurnClass
     {
         thatButton.Background = Brushes.Gold;
 
-        //Color for down
-        for (int i = Grid.GetRow(thatButton); i < maxSizeOfField; i++)
+        ColorForDown(thatButton);
+
+        ColorForUp(thatButton);
+
+        ColorForRight(thatButton);
+
+        ColorForLeft(thatButton);
+    }
+
+    private static void ColorForDown(Button thatButton)
+    {
+        for (int i = Grid.GetRow(thatButton) + 1; i < maxSizeOfField; i++)
         {
-            if (firstFleet[i, Grid.GetColumn(thatButton) - 3 - maxSizeOfField] > 0)
+            if (firstFleet[i, Grid.GetColumn(thatButton)] > 0)
             {
-                secondField[i, Grid.GetColumn(thatButton) - 3 - maxSizeOfField].Background = Brushes.Gold;
+                secondField[i, Grid.GetColumn(thatButton)].Background = Brushes.Gold;
             }
             else
             {
                 break;
             }
         }
+    }
 
-        //Color for up
-        for (int i = Grid.GetRow(thatButton) - 2; i >= 0; i--)
+    private static void ColorForUp(Button thatButton)
+    {
+        for (int i = Grid.GetRow(thatButton) - 1; i >= 0; i--)
         {
-            if (firstFleet[i, Grid.GetColumn(thatButton) - 3 - maxSizeOfField] > 0)
+            if (firstFleet[i, Grid.GetColumn(thatButton)] > 0)
             {
-                secondField[i, Grid.GetColumn(thatButton) - 3 - maxSizeOfField].Background = Brushes.Gold;
+                secondField[i, Grid.GetColumn(thatButton)].Background = Brushes.Gold;
             }
             else
             {
                 break;
             }
         }
+    }
 
-        //Color for right
-        for (int i = Grid.GetColumn(thatButton) - 2 - maxSizeOfField; i < maxSizeOfField; i++)
+    private static void ColorForRight(Button thatButton)
+    {
+        for (int i = Grid.GetColumn(thatButton) + 1; i < maxSizeOfField; i++)
         {
-            if (firstFleet[Grid.GetRow(thatButton) - 1, i] > 0)
+            if (firstFleet[Grid.GetRow(thatButton), i] > 0)
             {
-                secondField[Grid.GetRow(thatButton) - 1, i].Background = Brushes.Gold;
+                secondField[Grid.GetRow(thatButton), i].Background = Brushes.Gold;
             }
             else
             {
                 break;
             }
         }
+    }
 
-        //Color for left
-        for (int i = Grid.GetColumn(thatButton) - 4 - maxSizeOfField; i >= 0; i--)
+    private static void ColorForLeft(Button thatButton)
+    {
+        for (int i = Grid.GetColumn(thatButton) - 1; i >= 0; i--)
         {
-            if (firstFleet[Grid.GetRow(thatButton) - 1, i] > 0)
+            if (firstFleet[Grid.GetRow(thatButton), i] > 0)
             {
-                secondField[Grid.GetRow(thatButton) - 1, i].Background = Brushes.Gold;
+                secondField[Grid.GetRow(thatButton), i].Background = Brushes.Gold;
             }
             else
             {
