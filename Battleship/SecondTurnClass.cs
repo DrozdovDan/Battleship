@@ -104,6 +104,7 @@ public static class SecondTurnClass
             {
                 thatButton.Background = Brushes.Red;
                 thatButton.IsHitTestVisible = false;
+                thatButton.Click += NullClick;
 
                 str = "You beat a ship";
 

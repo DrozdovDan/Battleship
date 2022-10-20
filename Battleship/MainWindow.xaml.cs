@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -156,7 +157,7 @@ namespace Battleship
             {
                 FirstTurn();
                 
-                if (bot)
+                if (!firstTurn && bot)
                 {
                     SecondTurn();
                 }
@@ -310,6 +311,8 @@ namespace Battleship
             }
         }
 
+        [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH", MessageId = "type: System.Random")]
+        [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH", MessageId = "type: XoshiroImpl; size: 3733MB")]
         public void BotClick(object? sender, RoutedEventArgs e)
         {
             bot = true;
@@ -329,6 +332,10 @@ namespace Battleship
                     SecondClick(secondField[randomRow, randomColumn], e);
                 }
             }
+        }
+
+        public static void NullClick(object? sender, RoutedEventArgs e)
+        {
         }
     }
 }
