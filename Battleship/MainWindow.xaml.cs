@@ -324,7 +324,7 @@ namespace Battleship
             }
             else
             {
-                while (!firstTurn)
+                while (!firstTurn && !isSomeoneWon)
                 {
                     var randomRow = new Random().Next(maxSizeOfField);
                     var randomColumn = new Random().Next(maxSizeOfField);
